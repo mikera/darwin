@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class BitBoardTest {
 
-	@Test public void testFEN() {
+	@Test public void testFENStartingPosition() {
 		String fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		BitBoard bb=BitBoard.fromFEN(fen);
 		
@@ -19,6 +19,8 @@ public class BitBoardTest {
 		assertEquals(0x000000000000FF00L,bb.wp);
 		assertEquals(0x0000000000000081L,bb.wr);
 		assertEquals(0x4200000000000000L,bb.bn);
+		
+		assertEquals(fen,bb.toFEN());
 
 	}
 }

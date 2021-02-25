@@ -14,6 +14,36 @@ public class Util {
 	}
 	
 	/**
+	 * Get rank co-ordinate from a position byte
+	 * @param pos
+	 * @return Rank in format 0..7
+	 */
+	public static long rank(byte pos) {
+		int rank=(pos>>4)&0x7;
+		return rank;
+	}
+	
+	/**
+	 * Get file co-ordinate from a position byte
+	 * @param pos
+	 * @return File in format 0..7
+	 */
+	public static long file(byte pos) {
+		int file=pos&0x7;
+		return file;
+	}
+	
+	/**
+	 * Get bit representation of rank and file co-ordinates (expressed as 0..7)
+	 * @param rank Rank of square
+	 * @param file File of square
+	 * @return Long with single bit set
+	 */
+	public static long bit(int rank, int file) {
+		return 1L<<(rank*8+file);
+	}
+	
+	/**
 	 * Gets a position byte from a String in format "e6"
 	 * @param s
 	 * @return Position byte
@@ -68,5 +98,6 @@ public class Util {
 		sb.append("12345678".charAt(rank));
 		return sb.toString();
 	}
+
 	
 }

@@ -2,6 +2,8 @@ package darwin;
 
 
 public class BitBoard {
+	public static final BitBoard START = fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	
 	public long bp;
 	public long br;
 	public long bn;
@@ -109,7 +111,10 @@ public class BitBoard {
 		if ((wq&bit)!=0) return Piece.WQ;
 		if ((bq&bit)!=0) return Piece.BQ;
 		return 0;
-		
+	}
+	
+	public byte getPiece(int rank, int file) {
+		return getPiece(Util.bit(rank,file));
 	}
 
 	private static byte parseCastles(String c) {
@@ -125,5 +130,6 @@ public class BitBoard {
 		if (s.length()==0) s="-";
 		return s;
 	}
+
 	
 }

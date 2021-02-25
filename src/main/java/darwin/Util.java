@@ -99,5 +99,14 @@ public class Util {
 		return sb.toString();
 	}
 
+	/**
+	 * Gets the square representing by a bit string
+	 * @param bit Long value with single bit set
+	 * @return String representation of sqaure
+	 */
+	public static String square(long bit) {
+		return square(pos(bit));
+	}
+
 	
 }

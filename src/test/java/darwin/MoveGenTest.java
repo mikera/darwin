@@ -27,4 +27,13 @@ public class MoveGenTest {
 			assertEquals(Piece.BP,Move.capturePiece(move));
 		}
 	}
+	
+	public void testMoveTables() {
+		assertEquals(0x0000000000000302L,MoveTables.KTARGETS[0]);
+		assertEquals(0x0000000000020400L,MoveTables.NTARGETS[0]);
+		
+		assertEquals(0x0000000000020400L,MoveTables.RAYTARGETS[0+2*64]);
+		assertEquals(0x0101010101010100L,MoveTables.RAYTARGETS[0+0*64]);
+
+	}
 }

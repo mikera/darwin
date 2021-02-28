@@ -18,6 +18,16 @@ public class MoveGenTest {
 	}
 	
 	@Test
+	public void testStartMoves() {
+		BitBoard bb=BitBoard.START;
+		
+		MoveGen mg=new MoveGen();
+		mg.gen(bb);
+		
+		assertEquals(20,mg.count);
+	}
+	
+	@Test
 	public void testPawnCaptures() {
 		String fen="rnbqkbnr/8/8/pppppppp/PPPPPPPP/8/8/RNBQKBNR w KQkq - 0 9";
 		BitBoard bb=BitBoard.fromFEN(fen);
@@ -35,7 +45,10 @@ public class MoveGenTest {
 	@Test
 	public void testMoveTables() {
 		assertEquals(0x0000000000000302L,MoveTables.KTARGETS[0]);
-		assertEquals(0x0000000000020400L,MoveTables.NTARGETS[0]);
+		
+		assertEquals(0x0000000000020400L,MoveTables.NTARGETS[0]); // knight on a1
+		assertEquals(0x00000000000A1100L,MoveTables.NTARGETS[2]); // knight on c1
+		assertEquals(0x00110A0000000000L,MoveTables.NTARGETS[58]); // knight on c8
 		
 		assertEquals(0x00000000000000FEL,MoveTables.RAYTARGETS[0+2]);
 		assertEquals(0x0101010101010100L,MoveTables.RAYTARGETS[0+0]);

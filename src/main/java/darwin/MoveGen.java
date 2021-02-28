@@ -150,19 +150,24 @@ public class MoveGen {
 	}
 	
 	public void genKnightMoves() {
-		long knights=whiteMove?bb.wk:bb.bn;
-		for (long bit=Util.topBit(knights); bit!=0; knights&=(~bit)) {
-			// skip pinned knights
-			if ((bit&pinned)!=0) continue;
-			
-			int ix=Util.boardIndex(bit);
-			long possible=MoveTables.NTARGETS[ix]&~(whiteMove?whites:blacks);
-			if (possible==0) continue;
-			
-			byte source=Util.pos(bit);
-			for (long tbit=Util.topBit(knights); tbit!=0; possible&=(~tbit)) {
-				addMove(source,tbit);
+		long knights=whiteMove?bb.wn:bb.bn;
+		while(knights!=0) {
+			long knight=Util.topBit(knights);
+					
+			// only possible to move non-pinned knights
+			if ((knight&pinned)==0) {
+				
+				int ix=Util.boardIndex(knight);
+				long possible=MoveTables.NTARGETS[ix]&~(whiteMove?whites:blacks);
+				
+				byte source=Util.pos(knight);
+				while(possible!=0L) {
+					long tbit=Util.topBit(possible);
+					addMove(source,tbit);
+					possible&=~tbit;
+				}
 			}
+			knights&=~knight;
 		}
 	}
 

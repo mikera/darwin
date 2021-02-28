@@ -76,7 +76,7 @@ public class MoveGen {
 			long raymask=MoveTables.RAYTARGETS[ix*8+ray];
 			long enemy = (whiteMove?blacks:whites)&raymask;
 			if (enemy==0L) continue;
-			boolean upRight=MoveTables.RAYSHIFTS[ray]>0; // direction of bits
+			boolean upRight=(ray<=2)||(ray==7); // direction of bits
 			
 			// keep enemy piece closest to king
 			enemy=upRight?Long.lowestOneBit(enemy):Long.highestOneBit(enemy);

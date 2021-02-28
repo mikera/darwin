@@ -5,13 +5,13 @@ public class MoveTables {
 	 * Move targets for knights, indexed by bit position
 	 */
 	public static final long[] NTARGETS=new long[64];
-	public static int[] NSHIFTS=new int[] {-33,-31,-18,-14,14,18,31,33 };
+	public static int[][] NSHIFTS=new int[][] {{-2,-1},{-2,1},{-1,-2},{-1,2},{2,-1},{2,1},{1,-2},{1,2}};
 	
 	/**
 	 * Move targets for kings, indexed by bit position
 	 */
 	public static final long[] KTARGETS=new long[64];
-	public static int[] KSHIFTS=new int[] {-17, -16, -15, -1,1,15,16,17 };
+	public static int[][] KSHIFTS=new int[][] {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
 	
 	/**
 	 * Capture targets for pawns, indexed by bit position
@@ -25,7 +25,6 @@ public class MoveTables {
 	 * Organised in "rays" from 12 O'Clock going clockwise
 	 */
 	public static final long[] RAYTARGETS=new long[64*8];
-	public static int[] RAYSHIFTS=new int[] {16, 17, 1, -15,-16,-17,-1,15 };
 	
 	/**
 	 * Capture targets for Queens, indexed by bit position
@@ -46,24 +45,25 @@ public class MoveTables {
 	static {
 		for (int rank=0; rank<=7; rank++) {
 			for (int file=0; file<=7; file++) {
-				int ix=file+rank*8;
-				byte pos=Util.pos(rank,file);
+				int ix=Util.pos(rank,file);
 				
 				// Knight moves
 				for (int i=0; i<8; i++) {
-					int shift=NSHIFTS[i];
-					int tpos=pos+shift;
-					if (Util.validPos(tpos)) {
-						NTARGETS[ix]|=Util.bit((byte)tpos);
+					int[] shift=NSHIFTS[i];
+					int trank=rank+shift[0];
+					int tfile=file+shift[1];
+					if (Util.validPos(trank,tfile)) {
+						NTARGETS[ix]|=Util.bit(trank,tfile);
 					}
 				}
 				
 				// King moves
 				for (int i=0; i<8; i++) {
-					int shift=KSHIFTS[i];
-					int tpos=pos+shift;
-					if (Util.validPos(tpos)) {
-						KTARGETS[ix]|=Util.bit((byte)tpos);
+					int[] shift=KSHIFTS[i];
+					int trank=rank+shift[0];
+					int tfile=file+shift[1];
+					if (Util.validPos(trank,tfile)) {
+						KTARGETS[ix]|=Util.bit(trank,tfile);
 					}
 				}
 				
@@ -81,15 +81,15 @@ public class MoveTables {
 				
 				// Ray moves
 				for (int ray=0; ray<=7; ray++) {
-					int shift=RAYSHIFTS[ray];
-					int tpos=pos;
+					int[] shift=KSHIFTS[ray];
 					long targets=0L;
 					
 					// loop over distances until we hit invalid position
 					for (int d=1; d<=7; d++) {
-						tpos+=shift;
-						if (Util.validPos(tpos)) {
-							targets|=Util.bit((byte)tpos);
+						int trank=rank+shift[0]*d;
+						int tfile=file+shift[1]*d;
+						if (Util.validPos(trank,tfile)) {
+							targets|=Util.bit(trank,tfile);
 						} else {
 							break; // ray reached edge of board
 						}

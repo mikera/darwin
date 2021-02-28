@@ -9,7 +9,7 @@ public class Util {
 	 */
 	public static long bit(byte pos) {
 		int file=pos&0x7;
-		int rank=(pos>>4)&0x7;
+		int rank=(pos>>3)&0x7;
 		return 1L<<(rank*8+file);
 	}
 	
@@ -19,7 +19,7 @@ public class Util {
 	 * @return Rank in format 0..7
 	 */
 	public static int rank(byte pos) {
-		int rank=(pos>>4)&0x7;
+		int rank=(pos>>3)&0x7;
 		return rank;
 	}
 	
@@ -51,7 +51,7 @@ public class Util {
 	public static byte pos(String square) {
 		int file=square.charAt(0)-'a';
 		int rank=square.charAt(1)-'1';
-		return (byte) (file+rank*16);
+		return pos(rank,file);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public class Util {
 	 * Gets a position byte from a rank and file
 	 */
 	public static byte pos(int rank, int file) {
-		return (byte) (file+rank*16);
+		return (byte) (file+rank*8);
 	}
 	
 	/**
@@ -75,9 +75,9 @@ public class Util {
 	 */
 	public static byte pos(long bit) {
 		byte p=0;
-		if ((bit&0xFFFFFFFF00000000L)!=0) p+=64;
-		if ((bit&0xFFFF0000FFFF0000L)!=0) p+=32;
-		if ((bit&0xFF00FF00FF00FF00L)!=0) p+=16;
+		if ((bit&0xFFFFFFFF00000000L)!=0) p+=32;
+		if ((bit&0xFFFF0000FFFF0000L)!=0) p+=16;
+		if ((bit&0xFF00FF00FF00FF00L)!=0) p+=8;
 		if ((bit&0xF0F0F0F0F0F0F0F0L)!=0) p+=4;
 		if ((bit&0xCCCCCCCCCCCCCCCCL)!=0) p+=2;
 		if ((bit&0xAAAAAAAAAAAAAAAAL)!=0) p+=1;
@@ -91,7 +91,7 @@ public class Util {
 	 */
 	public static String square(byte pos) {
 		int file=pos&0x7;
-		int rank=(pos>>4)&0x7;
+		int rank=(pos>>3)&0x7;
 
 		StringBuilder sb=new StringBuilder(2);
 		sb.append("abcdefgh".charAt(file));
@@ -108,8 +108,8 @@ public class Util {
 		return square(pos(bit));
 	}
 
-	public static boolean validPos(int pos) {
-		return (pos&0x77)==pos;
+	public static boolean validPos(int rank, int file) {
+		return ((rank&0x7)==rank)&&((file&0x7)==file);
 	}
 
 	/**

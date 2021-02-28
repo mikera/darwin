@@ -35,5 +35,21 @@ public class MoveGenTest {
 		assertEquals(0x0000000000020400L,MoveTables.RAYTARGETS[0+2*64]);
 		assertEquals(0x0101010101010100L,MoveTables.RAYTARGETS[0+0*64]);
 
+		assertEquals(0x08080808F8080808L,MoveTables.RTARGETS[Util.boardIndex(3,3)]); // ROOK on d4
+		assertEquals(0x8041221400142241L,MoveTables.BTARGETS[Util.boardIndex(3,3)]); // Bishop on d4
+		
+		for (int i=0; i<64; i++) {
+			long rt=MoveTables.RTARGETS[i];
+			long bt=MoveTables.BTARGETS[i];
+			long qt=MoveTables.BTARGETS[i];
+			long kt=MoveTables.KTARGETS[i];
+			long nt=MoveTables.NTARGETS[i];
+
+			assertEquals(qt,bt|rt,"Queen moves should equal bishops+rooks");
+			assertEquals(0,bt&rt,"Rooks and bishops have no common moves");
+			assertEquals(0,qt&nt,"Queens and knights have no common moves");
+			assertEquals(kt,qt&kt,"Queen moves should contain all king moves");
+		}
+
 	}
 }

@@ -121,6 +121,10 @@ public class Util {
 		return 63-Long.numberOfLeadingZeros(bit);
 	}
 
+	public static int boardIndex(int rank, int file) {
+		return (rank*8)+file;
+	}
+
 
 	
 }

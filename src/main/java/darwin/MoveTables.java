@@ -27,6 +27,21 @@ public class MoveTables {
 	public static final long[] RAYTARGETS=new long[64*8];
 	public static int[] RAYSHIFTS=new int[] {16, 17, 1, -15,-16,-17,-1,15 };
 	
+	/**
+	 * Capture targets for Queens, indexed by bit position
+	 */
+	public static final long[] QTARGETS=new long[64];
+	
+	/**
+	 * Capture targets for Rooks, indexed by bit position
+	 */
+	public static final long[] RTARGETS=new long[64];
+
+	/**
+	 * Capture targets for Bishops, indexed by bit position
+	 */
+	public static final long[] BTARGETS=new long[64];
+
 	
 	static {
 		for (int rank=0; rank<=7; rank++) {
@@ -68,13 +83,22 @@ public class MoveTables {
 				for (int ray=0; ray<=7; ray++) {
 					int shift=RAYSHIFTS[ray];
 					int tpos=0;
+					long targets=0L;
 					for (int d=0; d<8; d++) {
 						tpos+=shift;
 						if ((tpos&0x88)==tpos) {
-							RAYTARGETS[ix*8+ray]|=Util.bit((byte)tpos);
+							targets|=Util.bit((byte)tpos);
 						} else {
 							break; // ray reached edge of board
 						}
+					}
+					
+					RAYTARGETS[ix*8+ray]=targets;
+					QTARGETS[ix]|=targets;
+					if ((ray&1)==0) {
+						RTARGETS[ix]|=targets;
+					} else {
+						BTARGETS[ix]|=targets;	
 					}
 				}
 			}

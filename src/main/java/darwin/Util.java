@@ -108,6 +108,19 @@ public class Util {
 		return square(pos(bit));
 	}
 
+	public static boolean validPos(int pos) {
+		return (pos&0x88)==pos;
+	}
+
+	/**
+	 * Gets the board index for the highest bit in the given long. -1 if there is no bit set.
+	 * @param bit
+	 * @return
+	 */
+	public static int boardIndex(long bit) {
+		return 63-Long.numberOfLeadingZeros(bit);
+	}
+
 
 	
 }

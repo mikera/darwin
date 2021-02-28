@@ -5,9 +5,34 @@ package darwin;
  */
 public class MoveGen {
 	BitBoard bb=null;
-	long whites=0L; // all white pieces
-	long blacks=0L; // all black peices
+	/**
+	 * Bitmap for all white pieces
+	 */
+	long whites=0L; 
+	
+	/**
+	 * Bitmap for all black pieces
+	 */
+	long blacks=0L; 
+	
 	boolean whiteMove=true;
+	
+	/**
+	 * Bitmap for pieces delivering check
+	 */
+	long checks = 0L;
+	
+	/**
+	 * Bitmap for enemy pieces that are pinning
+	 */
+	long pinners = 0L;
+	
+	/**
+	 * Bitmap for own pieces that are pinned
+	 */
+	long pinned = 0L;
+
+
 
 	public int count=0;
 	public int[] moves = new int [40];
@@ -32,10 +57,104 @@ public class MoveGen {
 		blacks=bb.bk|bb.bq|bb.br|bb.bb|bb.bn|bb.bp;
 	}
 	
+	private void computeChecks() {
+		long checks=0L;
+		boolean whiteMove=this.whiteMove;
+		long king=whiteMove?bb.wk:bb.bk;
+		
+		int ix=Util.boardIndex(king);
+		
+		// pawn checks
+		long possiblePawnChecks=whiteMove?MoveTables.PCAPSW[ix]:MoveTables.PCAPSB[ix];
+		checks|=possiblePawnChecks&(whiteMove?bb.bp:bb.wp);
+
+		// knight checks
+		checks|=(whiteMove?bb.bn:bb.wn)&MoveTables.NTARGETS[ix];
+		
+		// ray checks
+		for (int ray=0; ray<8; ray++) {
+			long raymask=MoveTables.RAYTARGETS[ix*8+ray];
+			long enemy = (whiteMove?blacks:whites)&raymask;
+			if (enemy==0L) continue;
+			boolean upRight=MoveTables.RAYSHIFTS[ray]>0; // direction of bits
+			
+			// keep enemy piece closest to king
+			enemy=upRight?Long.lowestOneBit(enemy):Long.highestOneBit(enemy);
+			
+			// check if enemy piece is capable of delivering a ray check
+			byte enemyPiece=bb.getPiece(enemy);
+			switch (enemyPiece&Piece.PIECE_MASK) {
+				case Piece.Q: break;
+				case Piece.R: if ((ray&1)==0) break; else continue;
+				case Piece.B: if ((ray&1)==1) break; else continue;
+				default: continue;
+			}
+			
+			// check for blocking friendly piece
+			long friend = (whiteMove?whites:blacks)&raymask;
+			if (friend!=0) {
+				int enemyIndex=Util.boardIndex(enemy);
+				int enemyRay=(ray+4)&0x7;
+				long enemyAttack=MoveTables.RAYTARGETS[enemyIndex*8+enemyRay];
+				friend&=enemyAttack;
+				if (friend!=0) {
+					if (Long.bitCount(friend)==1) {
+						// we have a pinned piece
+						this.pinners|=enemy;
+						this.pinned|=friend;
+					}
+					continue; // blocking piece
+				}
+			}
+		}
+
+		
+		this.checks= checks;
+	}
+
 	public void gen(BitBoard bb) {
 		setup(bb);
+		computeChecks();
+		
+		if (checks!=0) {
+			// need to bail out if more than one check
+			int checkCount=Long.bitCount(checks);
+			if (checkCount>1) {
+				genKingMoves();
+				return;
+			}
+		}
+		
+		genKingMoves();
+		genQueenMoves();
+		genRookMoves();
+		genBishopMoves();
+		genKnightMoves();
 		genPawnMoves();
 	}
+	
+	public void genKingMoves() {
+		// TODO
+	}
+	
+	public void genQueenMoves() {
+		// TODO
+	}
+	
+	public void genRookMoves() {
+		// TODO
+	}
+	
+	public void genBishopMoves() {
+		// TODO
+	}
+	
+	public void genKnightMoves() {
+		// TODO
+	}
+
+
+
 	
 	public void genPawnMoves() {
 		long pawns=whiteMove?bb.wp:bb.bp;

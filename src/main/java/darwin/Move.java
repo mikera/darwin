@@ -1,7 +1,7 @@
 package darwin;
 
 /**
- * Class representing a move
+ * Class representing a move in a 32-bit value
  * 
  * Bytes from high to low
  * byte 0: promotion piece
@@ -36,5 +36,37 @@ public class Move {
 	
 	public static byte target(int move) {
 		return (byte)((move & TARGET_MASK));
+	}
+	
+	public boolean isCapture() {
+		return isCapture(value);
+	}
+	
+	public boolean isCapture(int move) {
+		return (move & CAPTURE_MASK)!=0;
+	}
+	
+	public boolean isPromote() {
+		return isPromote(value);
+	}
+	
+	public boolean isPromote(int move) {
+		return (move & PROMOTE_MASK)!=0;
+	}
+	
+	public byte capturePiece() {
+		return capturePiece(value);
+	}
+	
+	public static byte capturePiece(int move) {
+		return (byte)((move & CAPTURE_MASK)>>16);
+	}
+	
+	public byte promotePiece() {
+		return promotePiece(value);
+	}
+	
+	public static byte promotePiece(int move) {
+		return (byte)((move & CAPTURE_MASK)>>16);
 	}
 }

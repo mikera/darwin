@@ -18,7 +18,7 @@ public class BitBoard {
 	public long wk;
 	
 	public boolean whiteMove;
-	public long enPassantTarget;
+	public long enPassantTarget; // bit location of en passant target (capturable) pawn
 	
 	public byte castles; // 1=K 2=Q 4=k, 8=q
 	public int halfMoves; // half moves since last pawn move or capture

@@ -150,12 +150,26 @@ public class MoveGen {
 	}
 	
 	public void genKnightMoves() {
-		// TODO
+		long knights=whiteMove?bb.wk:bb.bn;
+		for (long bit=Util.topBit(knights); bit!=0; knights&=(~bit)) {
+			// skip pinned knights
+			if ((bit&pinned)!=0) continue;
+			
+			int ix=Util.boardIndex(bit);
+			long possible=MoveTables.NTARGETS[ix]&~(whiteMove?whites:blacks);
+			if (possible==0) continue;
+			
+			byte source=Util.pos(bit);
+			for (long tbit=Util.topBit(knights); tbit!=0; possible&=(~tbit)) {
+				addMove(source,tbit);
+			}
+		}
 	}
 
 
 
 	
+
 	public void genPawnMoves() {
 		long pawns=whiteMove?bb.wp:bb.bp;
 		genPawnAdvances(pawns);
@@ -164,29 +178,50 @@ public class MoveGen {
 
 	private void genPawnCaptures(long pawns) {
 		long targets=(whiteMove?blacks:whites)|bb.enPassantTarget;
-		long right=(pawns&0x00FEFEFEFEFEFE00L)&(whiteMove?(targets>>9):(targets<<7));
-		long lefft=(pawns&0x007F7F7F7F7F7F00L)&(whiteMove?(targets>>7):(targets<<9));
 		
-		for (long bit=Long.highestOneBit(right); bit!=0; right&=(~bit)) {
-			byte pos=Util.pos(bit);
-			addPawnCaptures(pos,(byte)(pos+(whiteMove?17:-15)));
+		long right=(pawns&0x007F7F7F7F7F7F00L)&(whiteMove?(targets>>9):(targets<<7));
+		
+		long lefft=(pawns&0x00FEFEFEFEFEFE00L)&(whiteMove?(targets>>7):(targets<<9));
+		
+		while(right!=0) {
+			long pawn=Util.topBit(right);
+			addPawnCapture(pawn,whiteMove?(pawn<<9):(pawn>>7));
+			right&=~pawn;
 		}
 		
-		for (long bit=Long.highestOneBit(lefft); bit!=0; lefft&=(~bit)) {
-			byte pos=Util.pos(bit);
-			addPawnCaptures(pos,(byte)(pos+(whiteMove?17:-15)));
+		while(lefft!=0) {
+			long pawn=Util.topBit(lefft);
+			addPawnCapture(pawn,whiteMove?(pawn<<7):(pawn>>9));
+			lefft&=~pawn;
 		}
 	}
 
-	private void addPawnCaptures(byte source, byte target) {
+	private void addPawnCapture(long source, long target) {
 		byte targetPiece=bb.getPiece(target);
+		// TODO: captured piece for en passant
 		
 		// TODO: promotion
 		// int targetRank=Util.rank(target);
 		// boolean promote= (targetRank==(whiteMove?7:0));
 		
-		int move=(targetPiece<<16)|(source<<8)|target;
+		byte spos=Util.pos(source);
+		byte tpos=Util.pos(target);
+		int move=(targetPiece<<16)|(spos<<8)|tpos;
 		addMove(move);	
+	}
+	
+
+	private void addMove(byte sourcePos, long targetBit) {
+		byte targetPos=Util.pos(targetBit);
+		long captureBit=targetBit&(whiteMove?blacks:whites);
+		if (captureBit!=0) {
+			byte targetPiece=bb.getPiece(targetBit); 
+			int move=(targetPiece<<16)|(sourcePos<<8)|targetPos;
+			addMove(move);	
+		} else {
+			int move=(sourcePos<<8)|targetPos;
+			addMove(move);	
+		}
 	}
 
 	private void genPawnAdvances(long pawns) {
@@ -195,24 +230,28 @@ public class MoveGen {
 		long push1=pawns&~(whiteMove?(blocks>>8):(blocks<<8));
 		long push2=push1&(whiteMove?0x0000000000FF00L:0x00FF000000000000L)&~(whiteMove?(blocks>>16):(blocks<<16));
 		
-		for (long bit=Long.highestOneBit(push1); bit!=0; push1&=(~bit)) {
-			byte pos=Util.pos(bit);
+		while (push1!=0) {
+			long pawn=Util.topBit(push1);
+			byte pos=Util.pos(pawn);
 			int rank=Util.rank(pos);
 			if (rank==(whiteMove?6:1)) {
 				// TODO promotion moves
 			} else {
 				addPawnAdvance(pos,(byte)(pos+(whiteMove?16:-16)));
 			}
+			push1&=~pawn;
 		}
 		
-		for (long bit=Long.highestOneBit(push2); bit!=0; push2&=(~bit)) {
-			byte pos=Util.pos(bit);
+		while(push2!=0) {
+			long pawn=Util.topBit(push2);
+			byte pos=Util.pos(pawn);
 			int rank=Util.rank(pos);
 			if (rank==(whiteMove?6:1)) {
 				// TODO promotion moves
 			} else {
 				addPawnAdvance(pos,(byte)(pos+(whiteMove?32:-32)));
 			}
+			push2&=~pawn;
 		}
 		
 	}

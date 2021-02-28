@@ -109,7 +109,7 @@ public class Util {
 	}
 
 	public static boolean validPos(int pos) {
-		return (pos&0x88)==pos;
+		return (pos&0x77)==pos;
 	}
 
 	/**
@@ -123,6 +123,11 @@ public class Util {
 
 	public static int boardIndex(int rank, int file) {
 		return (rank*8)+file;
+	}
+
+	public static long topBit(long bits) {
+		if (bits==0L) return 0L;
+		return Long.highestOneBit(bits);
 	}
 
 

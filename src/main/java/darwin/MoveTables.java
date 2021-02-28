@@ -62,7 +62,7 @@ public class MoveTables {
 				for (int i=0; i<8; i++) {
 					int shift=KSHIFTS[i];
 					int tpos=pos+shift;
-					if ((tpos&0x88)==tpos) {
+					if (Util.validPos(tpos)) {
 						KTARGETS[ix]|=Util.bit((byte)tpos);
 					}
 				}
@@ -82,11 +82,13 @@ public class MoveTables {
 				// Ray moves
 				for (int ray=0; ray<=7; ray++) {
 					int shift=RAYSHIFTS[ray];
-					int tpos=0;
+					int tpos=pos;
 					long targets=0L;
-					for (int d=0; d<8; d++) {
+					
+					// loop over distances until we hit invalid position
+					for (int d=1; d<=7; d++) {
 						tpos+=shift;
-						if ((tpos&0x88)==tpos) {
+						if (Util.validPos(tpos)) {
 							targets|=Util.bit((byte)tpos);
 						} else {
 							break; // ray reached edge of board

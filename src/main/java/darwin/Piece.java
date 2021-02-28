@@ -35,5 +35,9 @@ public class Piece {
 		return (white?"-PNBRQK":"-pnbrqk").charAt(p);
 	}
 
+	public static boolean isKing(byte piece) {
+		return (piece&PIECE_MASK)==K;
+	}
+
 
 }

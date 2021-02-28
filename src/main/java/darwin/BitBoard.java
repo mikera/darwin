@@ -95,6 +95,10 @@ public class BitBoard {
 		
 		return String.join(" ",ss);
 	}
+	
+	public byte getPiece(byte pos) {
+		return getPiece(Util.bit(pos));
+	}
 
 	public byte getPiece(long bit) {
 		// Order by likelihood

@@ -18,17 +18,17 @@ public class Util {
 	 * @param pos
 	 * @return Rank in format 0..7
 	 */
-	public static long rank(byte pos) {
+	public static int rank(byte pos) {
 		int rank=(pos>>4)&0x7;
 		return rank;
 	}
 	
 	/**
-	 * Get file co-ordinate from a position byte
+	 * Get file co-ordinate from a position byte 
 	 * @param pos
 	 * @return File in format 0..7
 	 */
-	public static long file(byte pos) {
+	public static int file(byte pos) {
 		int file=pos&0x7;
 		return file;
 	}
@@ -107,6 +107,7 @@ public class Util {
 	public static String square(long bit) {
 		return square(pos(bit));
 	}
+
 
 	
 }

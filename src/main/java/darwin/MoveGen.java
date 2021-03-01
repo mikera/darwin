@@ -156,24 +156,18 @@ public class MoveGen {
 					
 			// only possible to move non-pinned knights
 			if ((knight&pinned)==0) {
-				
 				int ix=Util.boardIndex(knight);
 				long possible=MoveTables.NTARGETS[ix]&~(whiteMove?whites:blacks);
 				
-				byte source=Util.pos(knight);
 				while(possible!=0L) {
 					long tbit=Util.topBit(possible);
-					addMove(source,tbit);
+					addMoveNotPinned(knight,tbit);
 					possible&=~tbit;
 				}
 			}
 			knights&=~knight;
 		}
 	}
-
-
-
-	
 
 	public void genPawnMoves() {
 		long pawns=whiteMove?bb.wp:bb.bp;
@@ -215,8 +209,47 @@ public class MoveGen {
 		addMove(move);	
 	}
 	
-
-	private void addMove(byte sourcePos, long targetBit) {
+	/**
+	 * Add a move, checking for pins
+	 * @param sourcePos
+	 * @param targetBit
+	 */
+	@SuppressWarnings("unused")
+	private void addMove(long sourceBit, long targetBit) {
+		if (pinPrevents(sourceBit,targetBit)) return;
+		addMoveNotPinned(sourceBit,targetBit);
+	}
+	
+	/**
+	 * Check if a pin is preventing a piece move
+	 * @param sourceBit
+	 * @param targetBit
+	 * @return
+	 */
+	private boolean pinPrevents(long sourceBit, long targetBit) {
+		if ((sourceBit&pinned)!=0) {
+			// need to check destination square is on same ray as king
+			long king=whiteMove?bb.wk:bb.bk;
+			byte kingPos=Util.pos(king);
+			for (int ray=0; ray<=7; ray++) {
+				long kingRay=MoveTables.RAYTARGETS[kingPos*8+ray];
+				if ((kingRay&sourceBit)!=0L) {
+					if ((kingRay&targetBit)==0L) return true;
+					return false;
+				}
+			}
+			throw new Error("Piece on "+Util.square(sourceBit)+" marked as pinned but not on ray from king at "+Util.square(kingPos));
+		}
+		return false;
+	}
+		
+	/**
+	 * Add a move, without checking for pins
+	 * @param sourcePos
+	 * @param targetBit
+	 */
+	private void addMoveNotPinned(long sourceBit, long targetBit) {
+		byte sourcePos=Util.pos(sourceBit);
 		byte targetPos=Util.pos(targetBit);
 		long captureBit=targetBit&(whiteMove?blacks:whites);
 		if (captureBit!=0) {
@@ -237,33 +270,22 @@ public class MoveGen {
 		
 		while (push1!=0) {
 			long pawn=Util.topBit(push1);
-			byte pos=Util.pos(pawn);
-			int rank=Util.rank(pos);
-			if (rank==(whiteMove?6:1)) {
-				// TODO promotion moves
-			} else {
-				addPawnAdvance(pos,(byte)(pos+(whiteMove?16:-16)));
-			}
+			addPawnAdvance(pawn,whiteMove?(pawn<<8):(pawn>>8));
 			push1&=~pawn;
 		}
 		
 		while(push2!=0) {
 			long pawn=Util.topBit(push2);
-			byte pos=Util.pos(pawn);
-			int rank=Util.rank(pos);
-			if (rank==(whiteMove?6:1)) {
-				// TODO promotion moves
-			} else {
-				addPawnAdvance(pos,(byte)(pos+(whiteMove?32:-32)));
-			}
+			addPawnAdvance(pawn,whiteMove?(pawn<<16):(pawn>>16));
 			push2&=~pawn;
 		}
 		
 	}
 
-	private void addPawnAdvance(byte source, byte target) {
-		int move=(source<<8)|target;
-		addMove(move);
+	private void addPawnAdvance(long source, long target) {
+		if (pinPrevents(source,target)) return;
+		// TODO: promotion moves
+		addMoveNotPinned(source,target);
 	}
 
 	public int getMove(int i) {

@@ -60,7 +60,7 @@ public class MoveGen {
 	private void computeChecks() {
 		long checks=0L;
 		boolean whiteMove=this.whiteMove;
-		long king=whiteMove?bb.wk:bb.bk;
+		long king=bb.k(whiteMove);
 		
 		int ix=Util.boardIndex(king);
 		
@@ -229,7 +229,7 @@ public class MoveGen {
 	private boolean pinPrevents(long sourceBit, long targetBit) {
 		if ((sourceBit&pinned)!=0) {
 			// need to check destination square is on same ray as king
-			long king=whiteMove?bb.wk:bb.bk;
+			long king=bb.k(whiteMove);
 			byte kingPos=Util.pos(king);
 			for (int ray=0; ray<=7; ray++) {
 				long kingRay=MoveTables.RAYTARGETS[kingPos*8+ray];

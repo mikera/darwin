@@ -1,7 +1,7 @@
 package darwin;
 
 
-public class BitBoard {
+public final class BitBoard {
 	public static final BitBoard START = fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	
 	private long black;
@@ -15,12 +15,10 @@ public class BitBoard {
 	public long bn;
 	public long bb;
 	public long bq;
-	public long bk;
 	public long wr;
 	public long wn;
 	public long wb;
 	public long wq;
-	public long wk;
 	
 	public long white() {
 		return white;
@@ -50,6 +48,22 @@ public class BitBoard {
 		return pawn&black;
 	}
 	
+	public long k() {
+		return king;
+	}
+	
+	public long k(boolean side) {
+		return king&(side?white:black);
+	}
+	
+	public long wk() {
+		return king&white;
+	}
+	
+	public long bk() {
+		return king&black;
+	}
+	
 	public boolean whiteMove;
 	public long enPassantTarget; // bit location of en passant target (capturable) pawn
 	
@@ -71,13 +85,13 @@ public class BitBoard {
 				char c=p.charAt(ix++);
 				long b=Util.bit(rank,file);
 				switch (c) {
-				case 'K': bb.wk+=b; bb.white+=b; break;
+				case 'K': bb.king+=b; bb.white+=b; break;
 				case 'Q': bb.wq+=b; bb.white+=b; break;
 				case 'R': bb.wr+=b; bb.white+=b; break;
 				case 'B': bb.wb+=b; bb.white+=b; break;
 				case 'N': bb.wn+=b; bb.white+=b; break;
 				case 'P': bb.pawn+=b; bb.white+=b; break;
-				case 'k': bb.bk+=b; bb.black+=b; break;
+				case 'k': bb.king+=b; bb.black+=b; break;
 				case 'q': bb.bq+=b; bb.black+=b; break;
 				case 'r': bb.br+=b; bb.black+=b; break;
 				case 'b': bb.bb+=b; bb.black+=b; break;
@@ -140,13 +154,13 @@ public class BitBoard {
 			if ((wr&bit)!=0) return Piece.WR;
 			if ((wb&bit)!=0) return Piece.WB;
 			if ((wn&bit)!=0) return Piece.WN;
-			if ((wk&bit)!=0) return Piece.WK;
+			if ((king&bit)!=0) return Piece.WK;
 			if ((wq&bit)!=0) return Piece.WQ;
 		} else if ((black&bit)!=0) {
 			if ((pawn&bit)!=0) return Piece.BP;
 			if ((br&bit)!=0) return Piece.BR;
 			if ((bb&bit)!=0) return Piece.BB;
-			if ((bk&bit)!=0) return Piece.BK;
+			if ((king&bit)!=0) return Piece.BK;
 			if ((bq&bit)!=0) return Piece.BQ;
 			if ((bn&bit)!=0) return Piece.BN;
 		}

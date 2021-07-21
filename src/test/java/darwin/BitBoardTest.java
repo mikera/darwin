@@ -10,8 +10,8 @@ public class BitBoardTest {
 		String fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		BitBoard bb=BitBoard.fromFEN(fen);
 		
-		assertEquals("e1",Util.square(bb.wk));
-		assertEquals("e8",Util.square(bb.bk));
+		assertEquals("e1",Util.square(bb.wk()));
+		assertEquals("e8",Util.square(bb.bk()));
 		assertEquals("d1",Util.square(bb.wq));
 		assertEquals("d8",Util.square(bb.bq));
 		

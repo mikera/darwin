@@ -53,8 +53,8 @@ public class MoveGen {
 	public void setup(BitBoard bb) {
 		this.bb=bb;
 		this.whiteMove=bb.whiteMove;
-		whites=bb.wk|bb.wq|bb.wr|bb.wb|bb.wn|bb.wp;
-		blacks=bb.bk|bb.bq|bb.br|bb.bb|bb.bn|bb.bp;
+		whites=bb.white();
+		blacks=bb.black();
 	}
 	
 	private void computeChecks() {
@@ -66,7 +66,7 @@ public class MoveGen {
 		
 		// pawn checks
 		long possiblePawnChecks=whiteMove?MoveTables.PCAPSW[ix]:MoveTables.PCAPSB[ix];
-		checks|=possiblePawnChecks&(whiteMove?bb.bp:bb.wp);
+		checks|=possiblePawnChecks&(bb.p(!whiteMove));
 
 		// knight checks
 		checks|=(whiteMove?bb.bn:bb.wn)&MoveTables.NTARGETS[ix];
@@ -170,7 +170,7 @@ public class MoveGen {
 	}
 
 	public void genPawnMoves() {
-		long pawns=whiteMove?bb.wp:bb.bp;
+		long pawns=bb.p(whiteMove);
 		genPawnAdvances(pawns);
 		genPawnCaptures(pawns);
 	}

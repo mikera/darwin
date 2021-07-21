@@ -4,18 +4,51 @@ package darwin;
 public class BitBoard {
 	public static final BitBoard START = fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	
-	public long bp;
+	private long black;
+	private long white;
+	private long pawn;
+	private long bishop;
+	private long rook;
+	private long king;
+	
 	public long br;
 	public long bn;
 	public long bb;
 	public long bq;
 	public long bk;
-	public long wp;
 	public long wr;
 	public long wn;
 	public long wb;
 	public long wq;
 	public long wk;
+	
+	public long white() {
+		return white;
+	}
+	
+	public long black() {
+		return black;
+	}
+	
+	public long occupied() {
+		return white|black;
+	}
+	
+	public long p() {
+		return pawn;
+	}
+	
+	public long p(boolean side) {
+		return pawn&(side?white:black);
+	}
+	
+	public long wp() {
+		return pawn&white;
+	}
+	
+	public long bp() {
+		return pawn&black;
+	}
 	
 	public boolean whiteMove;
 	public long enPassantTarget; // bit location of en passant target (capturable) pawn
@@ -38,18 +71,18 @@ public class BitBoard {
 				char c=p.charAt(ix++);
 				long b=Util.bit(rank,file);
 				switch (c) {
-				case 'K': bb.wk+=b; break;
-				case 'Q': bb.wq+=b; break;
-				case 'R': bb.wr+=b; break;
-				case 'B': bb.wb+=b; break;
-				case 'N': bb.wn+=b; break;
-				case 'P': bb.wp+=b; break;
-				case 'k': bb.bk+=b; break;
-				case 'q': bb.bq+=b; break;
-				case 'r': bb.br+=b; break;
-				case 'b': bb.bb+=b; break;
-				case 'n': bb.bn+=b; break;
-				case 'p': bb.bp+=b; break;
+				case 'K': bb.wk+=b; bb.white+=b; break;
+				case 'Q': bb.wq+=b; bb.white+=b; break;
+				case 'R': bb.wr+=b; bb.white+=b; break;
+				case 'B': bb.wb+=b; bb.white+=b; break;
+				case 'N': bb.wn+=b; bb.white+=b; break;
+				case 'P': bb.pawn+=b; bb.white+=b; break;
+				case 'k': bb.bk+=b; bb.black+=b; break;
+				case 'q': bb.bq+=b; bb.black+=b; break;
+				case 'r': bb.br+=b; bb.black+=b; break;
+				case 'b': bb.bb+=b; bb.black+=b; break;
+				case 'n': bb.bn+=b; bb.black+=b; break;
+				case 'p': bb.pawn+=b; bb.black+=b; break;
 				default: file+=c-'1';
 				}
 				file+=1;
@@ -101,20 +134,23 @@ public class BitBoard {
 	}
 
 	public byte getPiece(long bit) {
-		// Order by likelihood
-		if ((wp&bit)!=0) return Piece.WP;
-		if ((bp&bit)!=0) return Piece.BP;
-		if ((wr&bit)!=0) return Piece.WR;
-		if ((br&bit)!=0) return Piece.BR;
-		if ((wb&bit)!=0) return Piece.WB;
-		if ((bb&bit)!=0) return Piece.BB;
-		if ((wn&bit)!=0) return Piece.WN;
-		if ((bn&bit)!=0) return Piece.BN;
-		if ((wk&bit)!=0) return Piece.WK;
-		if ((bk&bit)!=0) return Piece.BK;
-		if ((wq&bit)!=0) return Piece.WQ;
-		if ((bq&bit)!=0) return Piece.BQ;
-		return 0;
+		if ((white&bit)!=0) {
+			// Order by likelihood
+			if ((pawn&bit)!=0) return Piece.WP;
+			if ((wr&bit)!=0) return Piece.WR;
+			if ((wb&bit)!=0) return Piece.WB;
+			if ((wn&bit)!=0) return Piece.WN;
+			if ((wk&bit)!=0) return Piece.WK;
+			if ((wq&bit)!=0) return Piece.WQ;
+		} else if ((black&bit)!=0) {
+			if ((pawn&bit)!=0) return Piece.BP;
+			if ((br&bit)!=0) return Piece.BR;
+			if ((bb&bit)!=0) return Piece.BB;
+			if ((bk&bit)!=0) return Piece.BK;
+			if ((bq&bit)!=0) return Piece.BQ;
+			if ((bn&bit)!=0) return Piece.BN;
+		}
+		return Piece.NONE;
 	}
 	
 	public byte getPiece(int rank, int file) {

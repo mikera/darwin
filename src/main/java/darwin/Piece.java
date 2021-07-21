@@ -29,6 +29,8 @@ public class Piece {
 	public static final byte BN=(byte) (BLACK+N);
 	public static final byte BP=(byte) (BLACK+P);
 	
+	public static final byte NONE = 0;
+	
 	public static char toFEN(byte piece) {
 		int p=piece&PIECE_MASK;
 		boolean white=(piece&COLOUR_MASK)==WHITE;

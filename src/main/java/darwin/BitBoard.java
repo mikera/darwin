@@ -104,7 +104,7 @@ public final class BitBoard {
 	}
 	
 	public long n() {
-		return (~(pawn|rook|bishop|king));
+		return (~(pawn|rook|bishop|king))&(white|black);
 	}
 	
 	public long n(boolean side) {

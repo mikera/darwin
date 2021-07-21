@@ -11,14 +11,8 @@ public final class BitBoard {
 	private long rook;
 	private long king;
 	
-	public long br;
 	public long bn;
-	public long bb;
-	public long bq;
-	public long wr;
 	public long wn;
-	public long wb;
-	public long wq;
 	
 	public long white() {
 		return white;
@@ -64,6 +58,57 @@ public final class BitBoard {
 		return king&black;
 	}
 	
+	public long b() {
+		return (bishop&~rook);
+	}
+	
+	public long b(boolean side) {
+		return (bishop&~rook)&(side?white:black);
+	}
+	
+	public long wb() {
+		return (bishop&~rook)&white;
+	}
+	
+	public long bb() {
+		return (bishop&~rook)&black;
+	}
+	
+	public long q() {
+		return (bishop&rook);
+	}
+	
+	public long q(boolean side) {
+		return (bishop&rook)&(side?white:black);
+	}
+	
+	public long wq() {
+		return (bishop&rook)&white;
+	}
+	
+	public long bq() {
+		return (bishop&rook)&black;
+	}
+	
+	public long r() {
+		return (rook&~bishop);
+	}
+	
+	public long r(boolean side) {
+		return (rook&~bishop)&(side?white:black);
+	}
+	
+	public long wr() {
+		return (rook&~bishop)&white;
+	}
+	
+	public long br() {
+		return (rook&~bishop)&black;
+	}
+
+
+
+	
 	public boolean whiteMove;
 	public long enPassantTarget; // bit location of en passant target (capturable) pawn
 	
@@ -86,15 +131,15 @@ public final class BitBoard {
 				long b=Util.bit(rank,file);
 				switch (c) {
 				case 'K': bb.king+=b; bb.white+=b; break;
-				case 'Q': bb.wq+=b; bb.white+=b; break;
-				case 'R': bb.wr+=b; bb.white+=b; break;
-				case 'B': bb.wb+=b; bb.white+=b; break;
+				case 'Q': bb.rook+=b; bb.bishop+=b; bb.white+=b; break;
+				case 'R': bb.rook+=b; bb.white+=b; break;
+				case 'B': bb.bishop+=b; bb.white+=b; break;
 				case 'N': bb.wn+=b; bb.white+=b; break;
 				case 'P': bb.pawn+=b; bb.white+=b; break;
 				case 'k': bb.king+=b; bb.black+=b; break;
-				case 'q': bb.bq+=b; bb.black+=b; break;
-				case 'r': bb.br+=b; bb.black+=b; break;
-				case 'b': bb.bb+=b; bb.black+=b; break;
+				case 'q': bb.rook+=b; bb.bishop+=b; bb.black+=b; break;
+				case 'r': bb.rook+=b; bb.black+=b; break;
+				case 'b': bb.bishop+=b; bb.black+=b; break;
 				case 'n': bb.bn+=b; bb.black+=b; break;
 				case 'p': bb.pawn+=b; bb.black+=b; break;
 				default: file+=c-'1';
@@ -151,17 +196,19 @@ public final class BitBoard {
 		if ((white&bit)!=0) {
 			// Order by likelihood
 			if ((pawn&bit)!=0) return Piece.WP;
-			if ((wr&bit)!=0) return Piece.WR;
-			if ((wb&bit)!=0) return Piece.WB;
+			if ((rook&bit)!=0) {
+				return ((bishop&bit)==0)?Piece.WR:Piece.WQ;
+			}
+			if ((bishop&bit)!=0) return Piece.WB;
 			if ((wn&bit)!=0) return Piece.WN;
 			if ((king&bit)!=0) return Piece.WK;
-			if ((wq&bit)!=0) return Piece.WQ;
 		} else if ((black&bit)!=0) {
 			if ((pawn&bit)!=0) return Piece.BP;
-			if ((br&bit)!=0) return Piece.BR;
-			if ((bb&bit)!=0) return Piece.BB;
+			if ((rook&bit)!=0) {
+				return ((bishop&bit)==0)?Piece.BR:Piece.BQ;
+			}
+			if ((bishop&bit)!=0) return Piece.BB;
 			if ((king&bit)!=0) return Piece.BK;
-			if ((bq&bit)!=0) return Piece.BQ;
 			if ((bn&bit)!=0) return Piece.BN;
 		}
 		return Piece.NONE;

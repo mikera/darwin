@@ -11,9 +11,6 @@ public final class BitBoard {
 	private long rook;
 	private long king;
 	
-	public long bn;
-	public long wn;
-	
 	public long white() {
 		return white;
 	}
@@ -105,9 +102,22 @@ public final class BitBoard {
 	public long br() {
 		return (rook&~bishop)&black;
 	}
-
-
-
+	
+	public long n() {
+		return (~(pawn|rook|bishop|king));
+	}
+	
+	public long n(boolean side) {
+		return (~(pawn|rook|bishop|king))&(side?white:black);
+	}
+	
+	public long wn() {
+		return (~(pawn|rook|bishop|king))&white;
+	}
+	
+	public long bn() {
+		return (~(pawn|rook|bishop|king))&black;
+	}
 	
 	public boolean whiteMove;
 	public long enPassantTarget; // bit location of en passant target (capturable) pawn
@@ -134,13 +144,13 @@ public final class BitBoard {
 				case 'Q': bb.rook+=b; bb.bishop+=b; bb.white+=b; break;
 				case 'R': bb.rook+=b; bb.white+=b; break;
 				case 'B': bb.bishop+=b; bb.white+=b; break;
-				case 'N': bb.wn+=b; bb.white+=b; break;
+				case 'N': bb.white+=b; break;
 				case 'P': bb.pawn+=b; bb.white+=b; break;
 				case 'k': bb.king+=b; bb.black+=b; break;
 				case 'q': bb.rook+=b; bb.bishop+=b; bb.black+=b; break;
 				case 'r': bb.rook+=b; bb.black+=b; break;
 				case 'b': bb.bishop+=b; bb.black+=b; break;
-				case 'n': bb.bn+=b; bb.black+=b; break;
+				case 'n': bb.black+=b; break;
 				case 'p': bb.pawn+=b; bb.black+=b; break;
 				default: file+=c-'1';
 				}
@@ -200,8 +210,8 @@ public final class BitBoard {
 				return ((bishop&bit)==0)?Piece.WR:Piece.WQ;
 			}
 			if ((bishop&bit)!=0) return Piece.WB;
-			if ((wn&bit)!=0) return Piece.WN;
 			if ((king&bit)!=0) return Piece.WK;
+			return Piece.WN;
 		} else if ((black&bit)!=0) {
 			if ((pawn&bit)!=0) return Piece.BP;
 			if ((rook&bit)!=0) {
@@ -209,7 +219,7 @@ public final class BitBoard {
 			}
 			if ((bishop&bit)!=0) return Piece.BB;
 			if ((king&bit)!=0) return Piece.BK;
-			if ((bn&bit)!=0) return Piece.BN;
+			return Piece.BN;
 		}
 		return Piece.NONE;
 	}

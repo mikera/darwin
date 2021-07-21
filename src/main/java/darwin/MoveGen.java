@@ -69,7 +69,7 @@ public class MoveGen {
 		checks|=possiblePawnChecks&(bb.p(!whiteMove));
 
 		// knight checks
-		checks|=(whiteMove?bb.bn:bb.wn)&MoveTables.NTARGETS[ix];
+		checks|=bb.n(whiteMove)&MoveTables.NTARGETS[ix];
 		
 		// ray checks
 		for (int ray=0; ray<8; ray++) {
@@ -150,7 +150,7 @@ public class MoveGen {
 	}
 	
 	public void genKnightMoves() {
-		long knights=whiteMove?bb.wn:bb.bn;
+		long knights=bb.n(whiteMove);
 		while(knights!=0) {
 			long knight=Util.topBit(knights);
 					

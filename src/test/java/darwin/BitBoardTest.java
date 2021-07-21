@@ -18,7 +18,7 @@ public class BitBoardTest {
 		assertEquals(0x00FF000000000000L,bb.bp());
 		assertEquals(0x000000000000FF00L,bb.wp());
 		assertEquals(0x0000000000000081L,bb.wr());
-		assertEquals(0x4200000000000000L,bb.bn);
+		assertEquals(0x4200000000000000L,bb.bn());
 		
 		assertEquals(fen,bb.toFEN());
 

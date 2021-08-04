@@ -20,7 +20,7 @@ public class MoveGen {
 	/**
 	 * Bitmap for pieces delivering check
 	 */
-	long checks = 0L;
+	long checkers = 0L;
 	
 	/**
 	 * Bitmap for enemy pieces that are pinning
@@ -109,16 +109,16 @@ public class MoveGen {
 		}
 
 		
-		this.checks= checks;
+		this.checkers= checks;
 	}
 
 	public void gen(BitBoard bb) {
 		setup(bb);
 		computeChecks();
 		
-		if (checks!=0) {
+		if (checkers!=0) {
 			// need to bail out if more than one check
-			int checkCount=Long.bitCount(checks);
+			int checkCount=Long.bitCount(checkers);
 			if (checkCount>1) {
 				genKingMoves();
 				return;

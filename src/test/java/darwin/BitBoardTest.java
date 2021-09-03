@@ -24,7 +24,7 @@ public class BitBoardTest {
 
 	}
 	
-	@Test public void testConfigutations() {
+	@Test public void testConfigurations() {
 		String fen="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 		BitBoard bb=BitBoard.fromFEN(fen);
 		ensureEquivalents(bb);

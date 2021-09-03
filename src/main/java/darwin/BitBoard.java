@@ -4,11 +4,34 @@ package darwin;
 public final class BitBoard {
 	public static final BitBoard START = fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	
+	/**
+	 * Bit for black pieces
+	 */
 	private long black;
+	
+	/**
+	 * Bits for white pieces
+	 */
 	private long white;
+	
+	/**
+	 * Bits for pawns (both sides)
+	 */
 	private long pawn;
+	
+	/**
+	 * Bits for Bishop-moving pieces (bishops + queens)
+	 */
 	private long bishop;
+	
+	/**
+	 * Bits for Rook-moving pieces (rooks + queens)
+	 */
 	private long rook;
+	
+	/**
+	 * Bits for kings
+	 */
 	private long king;
 	
 	public long white() {
